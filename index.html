@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEUTSCHTEST - Aplikasi Ujian Online Anti-Nyontek</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between" oncontextmenu="return false;" oncopy="return false;" oncut="return false;" onpaste="return false;">
+
+    <!-- Top Header -->
+    <header class="bg-slate-900 text-white shadow-md py-3 px-4 sm:px-8 flex justify-between items-center sticky top-0 z-30">
+        <div class="flex items-center space-x-3">
+            <div class="bg-red-600 text-white p-2 rounded-lg font-bold text-lg flex items-center justify-center w-10 h-10">
+                DE
+            </div>
+            <div>
+                <h1 class="font-bold text-base sm:text-lg leading-tight">DEUTSCHTEST CBT</h1>
+                <p class="text-xs text-slate-400">Sistem Ujian Terintegrasi & Anti-Nyontek</p>
+            </div>
+        </div>
+        
+        <div id="header-status" class="hidden flex items-center space-x-4">
+            <div id="cheat-badge" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs px-3 py-1.5 rounded-full flex items-center space-x-1.5">
+                <i class="fa-solid font-bold fa-shield-halved"></i>
+                <span>Status: Aman (0 Pelanggaran)</span>
+            </div>
+            <div class="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center space-x-2">
+                <i class="fa-regular fa-clock text-amber-400"></i>
+                <span id="timer-display" class="font-mono text-amber-300">60:00</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow container mx-auto px-4 py-6 max-w-5xl">
+
+        <!-- SCREEN 1: LOGIN & START EXAM -->
+        <div id="screen-login" class="max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+            <div class="bg-gradient-to-r from-blue-700 to-indigo-800 p-6 text-white text-center">
+                <i class="fa-solid fa-graduation-cap text-4xl mb-2 text-blue-200"></i>
+                <h2 class="text-xl font-bold">Portal Ujian Bahasa Jerman</h2>
+                <p class="text-xs text-blue-100 mt-1">Silakan isi identitas Anda untuk memulai ujian</p>
+            </div>
+            <div class="p-6 space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Lengkap Siswa</label>
+                    <input type="text" id="student-name" placeholder="Masukkan nama lengkap" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Pilih Kelas</label>
+                    <select id="student-class" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white">
+                        <option value="">-- Pilih Kelas Anda --</option>
+                        <optgroup label="Kelas XI">
+                            <option value="XI F1">XI F1</option>
+                            <option value="XI F2">XI F2</option>
+                            <option value="XI F3">XI F3</option>
+                            <option value="XI F4">XI F4</option>
+                            <option value="XI F5">XI F5</option>
+                            <option value="XI F6">XI F6</option>
+                            <option value="XI F7">XI F7</option>
+                            <option value="XI F8">XI F8</option>
+                        </optgroup>
+                        <optgroup label="Kelas XII">
+                            <option value="XII F1">XII F1</option>
+                            <option value="XII F2">XII F2</option>
+                            <option value="XII F3">XII F3</option>
+                            <option value="XII F4">XII F4</option>
+                            <option value="XII F5">XII F5</option>
+                            <option value="XII F6">XII F6</option>
+                            <option value="XII F7">XII F7</option>
+                            <option value="XII F8">XII F8</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <!-- Rules Box -->
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800 space-y-2">
+                    <p class="font-bold text-amber-900 flex items-center text-sm">
+                        <i class="fa-solid fa-triangle-exclamation mr-2 text-amber-600"></i> ATURAN KETAT UJIAN ANTI-NYONTEK:
+                    </p>
+                    <ul class="list-disc list-inside space-y-1 pl-1">
+                        <li>Ujian berjalan dalam mode <b>Layar Penuh (Fullscreen)</b>.</li>
+                        <li><b>DILARANG</b> berpindah tab, aplikasi, atau memperkecil browser.</li>
+                        <li>Sistem mendeteksi kecurangan secara otomatis. Maksimal <b>3x peringatan</b> sebelum jawaban Anda dikirim paksa!</li>
+                        <li>Fitur Klik Kanan, Copy, Paste, dan Shortcut telah dinonaktifkan.</li>
+                    </ul>
+                </div>
+
+                <button onclick="startExam()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-indigo-500/30 transition duration-200 flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-play text-sm"></i>
+                    <span>Mulai Ujian Sekarang</span>
+                </button>
+
+                <button onclick="openLeaderboardModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl transition duration-200 flex items-center justify-center space-x-2 text-xs">
+                    <i class="fa-solid fa-trophy text-amber-500"></i>
+                    <span>Lihat Leaderboard & Rekap Nilai Siswa</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: EXAM WORKSPACE -->
+        <div id="screen-exam" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- Left Side: Main Question Box -->
+            <div class="lg:col-span-3 space-y-4">
+                <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+                        <span id="question-category" class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full">
+                            Kategori
+                        </span>
+                        <span id="question-counter" class="text-xs font-semibold text-slate-500">
+                            Soal 1 dari 40
+                        </span>
+                    </div>
+
+                    <p id="question-text" class="text-base sm:text-lg font-medium text-slate-800 mb-6 leading-relaxed">
+                        Loading soal...
+                    </p>
+
+                    <!-- Options List -->
+                    <div id="options-container" class="space-y-3">
+                        <!-- Dynamic Options generated via JS -->
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex justify-between items-center bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+                    <button id="btn-prev" onclick="navigateQuestion(-1)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                        <span>Sebelumnya</span>
+                    </button>
+                    
+                    <button id="btn-next" onclick="navigateQuestion(1)" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold transition flex items-center space-x-2">
+                        <span>Berikutnya</span>
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+
+                    <button id="btn-finish" onclick="confirmSubmitExam()" class="hidden px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold transition flex items-center space-x-2">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Selesaikan Ujian</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Side: Question Map Grid -->
+            <div class="lg:col-span-1 space-y-4">
+                <div class="bg-white rounded-2xl shadow-md p-5 border border-slate-200 sticky top-20">
+                    <h3 class="font-bold text-sm text-slate-700 mb-3 flex items-center justify-between">
+                        <span>Navigasi Soal</span>
+                        <span id="answered-count" class="text-xs bg-slate-100 px-2 py-0.5 rounded text-slate-600 font-normal">0/40 Terjawab</span>
+                    </h3>
+                    
+                    <div id="question-grid" class="grid grid-cols-5 gap-2 max-h-72 overflow-y-auto p-1">
+                        <!-- Grid buttons generated by JS -->
+                    </div>
+
+                    <div class="mt-5 pt-4 border-t border-slate-100 text-xs space-y-2 text-slate-500">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 bg-indigo-600 rounded-full inline-block"></span>
+                            <span>Soal Aktif</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 bg-emerald-500 rounded-full inline-block"></span>
+                            <span>Sudah Dijawab</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 bg-slate-200 rounded-full inline-block"></span>
+                            <span>Belum Dijawab</span>
+                        </div>
+                    </div>
+
+                    <button onclick="confirmSubmitExam()" class="mt-6 w-full py-2.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-semibold text-xs rounded-xl transition">
+                        Kirim Jawaban Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: RESULTS & EXPLANATIONS -->
+        <div id="screen-result" class="hidden space-y-6">
+            <!-- Score Summary Card -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+                <div id="result-header-bg" class="bg-gradient-to-r from-emerald-600 to-teal-700 p-6 text-white text-center">
+                    <span class="uppercase tracking-widest text-xs font-semibold bg-white/20 px-3 py-1 rounded-full">Hasil Akhir DEUTSCHTEST</span>
+                    <h2 id="result-score" class="text-5xl font-black my-3">100</h2>
+                    <p id="result-status-text" class="text-sm font-medium text-emerald-100">Selamat! Anda Lulus Ujian Bahasa Jerman.</p>
+                </div>
+
+                <div class="p-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center border-b border-slate-100">
+                    <div class="bg-slate-50 p-3 rounded-xl">
+                        <p class="text-xs text-slate-500 font-medium">Nama Siswa</p>
+                        <p id="res-student-name" class="font-bold text-slate-800 text-sm truncate">-</p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl">
+                        <p class="text-xs text-slate-500 font-medium">Kelas</p>
+                        <p id="res-student-class" class="font-bold text-slate-800 text-sm">-</p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl">
+                        <p class="text-xs text-slate-500 font-medium">Benar / Salah</p>
+                        <p id="res-correct-count" class="font-bold text-slate-800 text-sm">- / -</p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl">
+                        <p class="text-xs text-slate-500 font-medium">Catatan Kecurangan</p>
+                        <p id="res-cheat-count" class="font-bold text-emerald-600 text-sm">0 Kali</p>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-slate-50 flex flex-wrap justify-between items-center gap-3 px-6">
+                    <span class="text-xs text-slate-500">Jawaban & Pembahasan langsung diperiksa otomatis oleh sistem.</span>
+                    <div class="flex space-x-2">
+                        <button onclick="window.print()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center space-x-2">
+                            <i class="fa-solid fa-print"></i>
+                            <span>Cetak Hasil</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="flex border-b border-slate-200 space-x-4 bg-white p-2 rounded-xl shadow-sm">
+                <button id="tab-btn-explanations" onclick="switchResultTab('explanations')" class="flex-1 py-2.5 px-4 rounded-lg font-semibold text-xs sm:text-sm text-indigo-600 bg-indigo-50 border border-indigo-200 transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Pembahasan Detail Soal</span>
+                </button>
+                <button id="tab-btn-leaderboard" onclick="switchResultTab('leaderboard')" class="flex-1 py-2.5 px-4 rounded-lg font-semibold text-xs sm:text-sm text-slate-600 hover:bg-slate-100 transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-trophy text-amber-500"></i>
+                    <span>Leaderboard & Rekap Nilai</span>
+                </button>
+            </div>
+
+            <!-- TAB 1: Detailed Explanations -->
+            <div id="tab-content-explanations" class="space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-base flex items-center">
+                        <i class="fa-solid fa-list-check text-indigo-600 mr-2"></i>
+                        Filter Soal Ujian
+                    </h3>
+                    <div class="flex space-x-2">
+                        <button onclick="filterExplanations('all')" id="filter-all" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold">Semua (40)</button>
+                        <button onclick="filterExplanations('correct')" id="filter-correct" class="px-3 py-1.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg text-xs font-semibold">Benar</button>
+                        <button onclick="filterExplanations('wrong')" id="filter-wrong" class="px-3 py-1.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg text-xs font-semibold">Salah</button>
+                    </div>
+                </div>
+
+                <!-- Explanation List Container -->
+                <div id="explanations-list" class="space-y-4">
+                    <!-- Dynamic explanation items -->
+                </div>
+            </div>
+
+            <!-- TAB 2: Leaderboard & Rekap Nilai -->
+            <div id="tab-content-leaderboard" class="hidden space-y-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-base flex items-center">
+                                <i class="fa-solid fa-trophy text-amber-500 mr-2"></i>
+                                Papan Peringkat Siswa (Leaderboard)
+                            </h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Rekapitulasi seluruh nilai siswa yang telah menyelesaikan ujian DEUTSCHTEST.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <select id="leaderboard-filter-class" onchange="renderLeaderboardTable()" class="px-3 py-2 border border-slate-300 rounded-lg text-xs bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="ALL">-- Semua Kelas --</option>
+                                <optgroup label="Tingkat XI">
+                                    <option value="XI F1">XI F1</option>
+                                    <option value="XI F2">XI F2</option>
+                                    <option value="XI F3">XI F3</option>
+                                    <option value="XI F4">XI F4</option>
+                                    <option value="XI F5">XI F5</option>
+                                    <option value="XI F6">XI F6</option>
+                                    <option value="XI F7">XI F7</option>
+                                    <option value="XI F8">XI F8</option>
+                                </optgroup>
+                                <optgroup label="Tingkat XII">
+                                    <option value="XII F1">XII F1</option>
+                                    <option value="XII F2">XII F2</option>
+                                    <option value="XII F3">XII F3</option>
+                                    <option value="XII F4">XII F4</option>
+                                    <option value="XII F5">XII F5</option>
+                                    <option value="XII F6">XII F6</option>
+                                    <option value="XII F7">XII F7</option>
+                                    <option value="XII F8">XII F8</option>
+                                </optgroup>
+                            </select>
+                            <input type="text" id="leaderboard-search" oninput="renderLeaderboardTable()" placeholder="Cari Nama Siswa..." class="px-3 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 w-36 sm:w-48">
+                            <button onclick="clearLeaderboardData()" class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-semibold transition flex items-center space-x-1" title="Hapus Semua Rekap Data">
+                                <i class="fa-solid fa-trash-can"></i>
+                                <span>Reset Data</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="bg-indigo-50 border border-indigo-100 p-3 rounded-xl text-center">
+                            <p class="text-xs text-indigo-600 font-medium">Total Peserta</p>
+                            <p id="stat-total-students" class="text-lg font-bold text-indigo-900">0</p>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-100 p-3 rounded-xl text-center">
+                            <p class="text-xs text-emerald-600 font-medium">Rata-Rata Nilai</p>
+                            <p id="stat-avg-score" class="text-lg font-bold text-emerald-900">0</p>
+                        </div>
+                        <div class="bg-amber-50 border border-amber-100 p-3 rounded-xl text-center">
+                            <p class="text-xs text-amber-600 font-medium">Nilai Tertinggi</p>
+                            <p id="stat-max-score" class="text-lg font-bold text-amber-900">0</p>
+                        </div>
+                    </div>
+
+                    <!-- Leaderboard Table -->
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-left text-xs sm:text-sm">
+                            <thead class="bg-slate-800 text-white font-semibold">
+                                <tr>
+                                    <th class="p-3 text-center w-12">Peringkat</th>
+                                    <th class="p-3">Nama Siswa</th>
+                                    <th class="p-3 text-center">Kelas</th>
+                                    <th class="p-3 text-center">Nilai Ujian</th>
+                                    <th class="p-3 text-center">Kecurangan</th>
+                                    <th class="p-3 text-center">Waktu Selesai</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-table-body" class="divide-y divide-slate-100 bg-white">
+                                <!-- Dynamic Leaderboard Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Anti-Cheat Warning Modal -->
+    <div id="cheat-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl space-y-4 border border-red-200">
+            <div class="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800">PERINGATAN PELANGGARAN!</h3>
+            <p id="cheat-modal-msg" class="text-sm text-slate-600 leading-relaxed"></p>
+            <button onclick="resolveCheatWarning()" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs rounded-xl shadow-md transition">
+                Saya Mengerti & Kembali Ujian
+            </button>
+        </div>
+    </div>
+
+    <!-- Submit Confirmation Modal -->
+    <div id="submit-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl space-y-4">
+            <div class="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-paper-plane"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800">Konfirmasi Kirim Jawaban</h3>
+            <p id="submit-modal-msg" class="text-sm text-slate-600 leading-relaxed"></p>
+            <div class="flex space-x-3 pt-2">
+                <button onclick="closeSubmitModal()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition">
+                    Batal
+                </button>
+                <button onclick="submitExam()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow-md transition">
+                    Kirim Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Modal (For Login Screen Viewing) -->
+    <div id="leaderboard-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-6 shadow-2xl max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800 text-lg flex items-center">
+                    <i class="fa-solid fa-trophy text-amber-500 mr-2"></i> Rekapitulasi & Leaderboard Nilai
+                </h3>
+                <button onclick="closeLeaderboardModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 mb-4">
+                <select id="modal-filter-class" onchange="renderModalLeaderboardTable()" class="px-3 py-1.5 border border-slate-300 rounded-lg text-xs bg-white">
+                    <option value="ALL">-- Semua Kelas --</option>
+                    <optgroup label="Tingkat XI">
+                        <option value="XI F1">XI F1</option>
+                        <option value="XI F2">XI F2</option>
+                        <option value="XI F3">XI F3</option>
+                        <option value="XI F4">XI F4</option>
+                        <option value="XI F5">XI F5</option>
+                        <option value="XI F6">XI F6</option>
+                        <option value="XI F7">XI F7</option>
+                        <option value="XI F8">XI F8</option>
+                    </optgroup>
+                    <optgroup label="Tingkat XII">
+                        <option value="XII F1">XII F1</option>
+                        <option value="XII F2">XII F2</option>
+                        <option value="XII F3">XII F3</option>
+                        <option value="XII F4">XII F4</option>
+                        <option value="XII F5">XII F5</option>
+                        <option value="XII F6">XII F6</option>
+                        <option value="XII F7">XII F7</option>
+                        <option value="XII F8">XII F8</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="overflow-y-auto flex-grow rounded-xl border border-slate-200">
+                <table class="w-full text-left text-xs sm:text-sm">
+                    <thead class="bg-slate-800 text-white font-semibold sticky top-0">
+                        <tr>
+                            <th class="p-3 text-center w-12">Rank</th>
+                            <th class="p-3">Nama Siswa</th>
+                            <th class="p-3 text-center">Kelas</th>
+                            <th class="p-3 text-center">Nilai</th>
+                            <th class="p-3 text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-leaderboard-tbody" class="divide-y divide-slate-100 bg-white">
+                        <!-- Dynamic modal leaderboard rows -->
+            <div class="mt-4 pt-3 border-t border-slate-100 text-right flex justify-between items-center">
+                <button onclick="clearLeaderboardData()" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-semibold rounded-lg transition flex items-center space-x-1">
+                    <i class="fa-solid fa-trash-can"></i>
+                    <span>Reset Data Rekap</span>
+                </button>
+                <button onclick="closeLeaderboardModal()" class="px-5 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Retrieve leaderboard from localStorage (Clean state, no dummy entries)
+        function getLeaderboardData() {
+            const stored = localStorage.getItem("deutschtest_leaderboard");
+            if (stored) {
+                try {
+                    return JSON.parse(stored);
+                } catch (e) {
+                    return [];
+                }
+            } else {
+                return [];
+            }
+        }
+
+        function saveToLeaderboard(entry) {
+            const list = getLeaderboardData();
+            list.push(entry);
+            list.sort((a, b) => b.score - a.score || a.violations - b.violations);
+            localStorage.setItem("deutschtest_leaderboard", JSON.stringify(list));
+        }
+
+        function clearLeaderboardData() {
+            if (confirm("Apakah Anda yakin ingin menghapus seluruh data rekap nilai & leaderboard?")) {
+                localStorage.removeItem("deutschtest_leaderboard");
+                if (!document.getElementById("screen-result").classList.contains("hidden")) {
+                    renderLeaderboardTable();
+                }
+                if (!document.getElementById("leaderboard-modal").classList.contains("hidden")) {
+                    renderModalLeaderboardTable();
+                }
+                alertCustom("Data rekapitulasi nilai berhasil dibersihkan.");
+            }
+        }
+
+        // DATA SOAL DAN KUNCI JAWABAN BESERTA PEMBAHASAN
+        const questionsData = [
+            // A. BEGRÜSSUNG (1-6)
+            { id: 1, category: "A. BEGRÜSSUNG", text: "Was sagt man am Morgen zur Begrüßung?", options: ["Guten Abend!", "Gute Nacht!", "Guten Morgen!", "Auf Wiedersehen!"], correct: 2, explanation: "'Guten Morgen' digunakan sebagai salam resmi di pagi hari (sampai pukul 11.00)." },
+            { id: 2, category: "A. BEGRÜSSUNG", text: "Welche Begrüßung passt zu einer formellen Situation?", options: ["Tschüss!", "Hallo!", "Guten Tag!", "Bis bald!"], correct: 2, explanation: "'Guten Tag' adalah salam resmi/formell yang digunakan pada siang/sore hari." },
+            { id: 3, category: "A. BEGRÜSSUNG", text: "Welche Begrüßung ist eher informell?", options: ["Auf Wiedersehen!", "Guten Tag!", "Hallo!", "Guten Abend!"], correct: 2, explanation: "'Hallo' adalah salam santai/informell yang biasa digunakan antar teman/sebaya." },
+            { id: 4, category: "A. BEGRÜSSUNG", text: "Was sagt man normalerweise beim Abschied?", options: ["Guten Morgen!", "Auf Wiedersehen!", "Guten Tag!", "Wie geht es dir?"], correct: 1, explanation: "'Auf Wiedersehen' berarti 'Sampai jumpa lagi' dan digunakan saat berpisah secara formal." },
+            { id: 5, category: "A. BEGRÜSSUNG", text: "Ergänze den Dialog!\nA: Guten Morgen!\nB: _____________!", options: ["Gute Nacht", "Guten Morgen", "Auf Wiedersehen", "Danke"], correct: 1, explanation: "Jawaban dari salam 'Guten Morgen' adalah 'Guten Morgen' kembali." },
+            { id: 6, category: "A. BEGRÜSSUNG", text: "Was sagt man, wenn man abends schlafen geht?", options: ["Guten Tag!", "Guten Abend!", "Gute Nacht!", "Guten Morgen!"], correct: 2, explanation: "'Gute Nacht' diucapkan saat mau tidur malam hari (ucapan selamat tidur)." },
+
+            // B. SICH VORSTELLEN (7-14)
+            { id: 7, category: "B. SICH VORSTELLEN", text: "Wie sagt man seinen Namen auf Deutsch?", options: ["Ich heiße Anna.", "Ich komme Anna.", "Ich wohne Anna.", "Ich bin heiße Anna."], correct: 0, explanation: "Pola menyatakan nama: 'Ich heiße [Nama]' (Saya bernama Anna)." },
+            { id: 8, category: "B. SICH VORSTELLEN", text: "Was bedeutet „Wie heißt du?“", options: ["Wo wohnst du?", "Wie alt bist du?", "Wie ist dein Name?", "Woher kommst du?"], correct: 2, explanation: "'Wie heißt du?' bermakna sama dengan 'Wie ist dein Name?' (Siapa namamu?)." },
+            { id: 9, category: "B. SICH VORSTELLEN", text: "Welche Antwort passt zu „Wie heißt du?“", options: ["Ich bin 17 Jahre alt.", "Ich komme aus Indonesien.", "Ich heiße Budi.", "Ich wohne in Ambon."], correct: 2, explanation: "Pertanyaan 'Wie heißt du?' menanyakan nama, sehingga dijawab dengan 'Ich heiße Budi.'" },
+            { id: 10, category: "B. SICH VORSTELLEN", text: "Wie sagt man „Saya berasal dari Indonesia“ auf Deutsch?", options: ["Ich wohne Indonesien.", "Ich komme aus Indonesien.", "Ich bin Indonesien.", "Ich heiße Indonesien."], correct: 1, explanation: "Asal negara menggunakan kata kerja 'kommen aus' -> 'Ich komme aus Indonesien'." },
+            { id: 11, category: "B. SICH VORSTELLEN", text: "Was bedeutet „Woher kommst du?“", options: ["Wie heißt du?", "Wo wohnst du?", "Aus welchem Land oder Ort kommst du?", "Wie alt bist du?"], correct: 2, explanation: "'Woher kommst du?' menanyakan asal daerah/negara (Dari mana asalmu?)." },
+            { id: 12, category: "B. SICH VORSTELLEN", text: "Welche Antwort passt zu „Woher kommst du?“", options: ["Ich heiße Sinta.", "Ich bin 16 Jahre alt.", "Ich komme aus Indonesien.", "Ich wohne in Ambon."], correct: 2, explanation: "Pertanyaan 'Woher' dijawab dengan preposition 'aus' -> 'Ich komme aus Indonesien.'" },
+            { id: 13, category: "B. SICH VORSTELLEN", text: "Wie sagt man „Saya tinggal di Ambon“ auf Deutsch?", options: ["Ich komme aus Ambon.", "Ich heiße Ambon.", "Ich wohne in Ambon.", "Ich bin Ambon."], correct: 2, explanation: "Tempat tinggal menggunakan verba 'wohnen in' -> 'Ich wohne in Ambon'." },
+            { id: 14, category: "B. SICH VORSTELLEN", text: "Welche Frage passt zu der Antwort „Ich bin 16 Jahre alt“?", options: ["Wie heißt du?", "Wie alt bist du?", "Wo wohnst du?", "Woher kommst du?"], correct: 1, explanation: "'Ich bin 16 Jahre alt' menyatakan umur, jadi pertanyaannya 'Wie alt bist du?' (Berapa usiamu?)." },
+
+            // C. ANDERE VORSTELLEN (15-22)
+            { id: 15, category: "C. ANDERE VORSTELLEN", text: "Du stellst einen Freund vor. Welche Aussage ist richtig?", options: ["Das ist mein Freund, Budi.", "Das bin mein Freund, Budi.", "Das bist mein Freund, Budi.", "Das sind mein Freund, Budi."], correct: 0, explanation: "Memperkenalkan satu orang tunggal (maskulin) menggunakan 'Das ist mein Freund, [Nama]'." },
+            { id: 16, category: "C. ANDERE VORSTELLEN", text: "Du stellst eine Freundin vor. Welche Aussage ist richtig?", options: ["Das ist meine Freundin, Anna.", "Das sind meine Freundin, Anna.", "Das bist meine Freundin, Anna.", "Das bin meine Freundin, Anna."], correct: 0, explanation: "Memperkenalkan satu teman perempuan (feminin) menggunakan 'Das ist meine Freundin, [Nama]'." },
+            { id: 17, category: "C. ANDERE VORSTELLEN", text: "Ergänze den Satz!\nDas ist ______ Freund, Ali.", options: ["mein", "meine", "meinen", "meiner"], correct: 0, explanation: "'Freund' bernomena Maskulin (der), sehingga kata ganti kepunyaan bentuk nominatif adalah 'mein'." },
+            { id: 18, category: "C. ANDERE VORSTELLEN", text: "Ergänze den Satz!\nDas ist ______ Freundin, Sinta.", options: ["mein", "meine", "meinen", "meiner"], correct: 1, explanation: "'Freundin' bernomena Feminin (die), sehingga kata ganti kepunyaan menambahkan akhiran '-e' -> 'meine'." },
+            { id: 19, category: "C. ANDERE VORSTELLEN", text: "Lies den Dialog!\nA: Wer ist das?\nB: Das ist _____________.", options: ["meine Schwester", "ich Schwester", "mein Schwester", "mich Schwester"], correct: 0, explanation: "'Schwester' bermakna saudara perempuan (die/feminin), menggunakan possessivpronomen 'meine'." },
+            { id: 20, category: "C. ANDERE VORSTELLEN", text: "Lies den Text!\nDas ist Maria. Sie kommt aus Indonesien.\nWelche Aussage ist richtig?", options: ["Maria ist ein Mann.", "Maria ist eine Frau.", "Maria kommt aus Deutschland.", "Maria wohne in Deutschland."], correct: 1, explanation: "Pronomen 'Sie' (dia perempuan) menunjukkan bahwa Maria adalah seorang perempuan (eine Frau)." },
+            { id: 21, category: "C. ANDERE VORSTELLEN", text: "Lies den Text!\nDas ist Paul. Er kommt aus Deutschland.\nWie heißt die Person?", options: ["Paul", "Maria", "Anna", "Sinta"], correct: 0, explanation: "Berdasarkan teks 'Das ist Paul', nama orang tersebut adalah Paul." },
+            { id: 22, category: "C. ANDERE VORSTELLEN", text: "Ergänze den Dialog!\nA: Wer ist das?\nB: Das ist mein Bruder.\nA: Wie heißt er?\nB: _____________ heißt Lukas.", options: ["Sie", "Er", "Ich", "Wir"], correct: 1, explanation: "'Bruder' adalah kata benda maskulin (Er/Dia Laki-laki). Kata gantinya adalah 'Er'." },
+
+            // D. ZAHLEN (23-30)
+            { id: 23, category: "D. ZAHLEN", text: "Welche Zahl ist „sieben“?", options: ["6", "7", "8", "9"], correct: 1, explanation: "Angka 7 dalam bahasa Jerman adalah 'sieben'." },
+            { id: 24, category: "D. ZAHLEN", text: "Welche Zahl bedeutet „zehn“?", options: ["8", "9", "10", "11"], correct: 2, explanation: "'Zehn' merujuk pada angka 10." },
+            { id: 25, category: "D. ZAHLEN", text: "Wie schreibt man die Zahl 12 auf Deutsch?", options: ["zwölf", "zehn", "dreizehn", "zwanzig"], correct: 0, explanation: "Angka 12 ditulis 'zwölf'." },
+            { id: 26, category: "D. ZAHLEN", text: "Welche Zahl ist „fünfzehn“?", options: ["5", "14", "15", "50"], correct: 2, explanation: "'Fünfzehn' terdiri dari 5 (fünf) + 10 (zehn) = 15." },
+            { id: 27, category: "D. ZAHLEN", text: "Wie heißt die Zahl 20 auf Deutsch?", options: ["zwölf", "zwanzig", "zwei", "dreißig"], correct: 1, explanation: "Angka 20 disebut 'zwanzig'." },
+            { id: 28, category: "D. ZAHLEN", text: "Was bedeutet „einundzwanzig“?", options: ["12", "20", "21", "31"], correct: 2, explanation: "'einundzwanzig' = 1 (ein) + und (dan) + 20 (zwanzig) = 21." },
+            { id: 29, category: "D. ZAHLEN", text: "Wie schreibt man die Zahl 35 auf Deutsch?", options: ["fünfunddreißig", "dreiundfünfzig", "fünfundzwanzig", "dreißig"], correct: 0, explanation: "35 ditulis dengan satuan dulu baru puluhan: 5 (fünf) + und + 30 (dreißig) = 'fünfunddreißig'." },
+            { id: 30, category: "D. ZAHLEN", text: "Welche Zahl ist „vierzig“?", options: ["14", "40", "44", "50"], correct: 1, explanation: "'Vierzig' berarti angka 40 (vier + zig)." },
+
+            // E. PERSONALPRONOMEN (31-35)
+            { id: 31, category: "E. PERSONALPRONOMEN", text: "Welches Personalpronomen passt zu „Maria“?", options: ["er", "sie", "du", "wir"], correct: 1, explanation: "Maria adalah subjek perempuan tunggal (orang ketiga), kata gantinya adalah 'sie' (dia)." },
+            { id: 32, category: "E. PERSONALPRONOMEN", text: "Welches Personalpronomen passt zu „Paul“?", options: ["sie", "ich", "er", "wir"], correct: 2, explanation: "Paul adalah laki-laki tunggal, kata gantinya adalah 'er' (dia laki-laki)." },
+            { id: 33, category: "E. PERSONALPRONOMEN", text: "Welches Personalpronomen passt zu „Maria und Anna“?", options: ["er", "sie", "du", "ich"], correct: 1, explanation: "'Maria und Anna' adalah jamak (mereka), kata gantinya 'sie' (plural)." },
+            { id: 34, category: "E. PERSONALPRONOMEN", text: "Welches Personalpronomen passt zu „Budi und ich“?", options: ["ihr", "sie", "wir", "er"], correct: 2, explanation: "Subjek yang mencakup 'saya' + orang lain ('Budi und ich') diganti dengan 'wir' (kami/kita)." },
+            { id: 35, category: "E. PERSONALPRONOMEN", text: "Ergänze den Satz!\nIch habe eine Schwester. ______ heißt Anna.", options: ["Er", "Sie", "Wir", "Ihr"], correct: 1, explanation: "'Schwester' ber gender feminin (die), menggantikannya menggunakan kata ganti 'Sie' (Dia perempuan)." },
+
+            // F. KONJUGATION (36-40)
+            { id: 36, category: "F. KONJUGATION", text: "Ergänze den Satz mit der richtigen Form von „sein“!\nIch ___ Schüler.", options: ["bist", "ist", "bin", "sind"], correct: 2, explanation: "Konjugasi kata kerja 'sein' untuk subjek 'Ich' adalah 'bin'." },
+            { id: 37, category: "F. KONJUGATION", text: "Ergänze den Satz mit der richtigen Form von „sein“!\nDu ___ 16 Jahre alt.", options: ["bin", "bist", "ist", "sind"], correct: 1, explanation: "Konjugasi kata kerja 'sein' untuk subjek 'Du' adalah 'bist'." },
+            { id: 38, category: "F. KONJUGATION", text: "Ergänze den Satz mit der richtigen Form von „kommen“!\nWir ___ aus Indonesien.", options: ["komme", "kommst", "kommt", "kommen"], correct: 3, explanation: "Subjek 'Wir' membutuhkan konjugasi kata kerja berakhiran '-en' -> 'kommen'." },
+            { id: 39, category: "F. KONJUGATION", text: "Ergänze den Satz mit der richtigen Form von „wohnen“!\nEka ___ in Ambon.", options: ["wohne", "wohnst", "wohnt", "wohnen"], correct: 2, explanation: "'Eka' bernilai sama dengan orang ketiga tunggal (er/sie), konjugasinya berakhiran '-t' -> 'wohnt'." },
+            { id: 40, category: "F. KONJUGATION", text: "Lies den Text und wähle die richtige Antwort!\n„Das ist Anna. Sie ___ 16 Jahre alt und ___ in Ambon.“", options: ["bist – wohnst", "ist – wohnt", "bin – wohne", "sind – wohnen"], correct: 1, explanation: "Subjek 'Sie' (Anna/singular) memerlukan konjugasi 'sein' -> 'ist' dan 'wohnen' -> 'wohnt'." }
+        ];
+
+        // Application State
+        let studentData = { name: "", class: "" };
+        let userAnswers = new Array(questionsData.length).fill(null);
+        let currentQuestionIdx = 0;
+        let cheatViolations = 0;
+        const maxViolations = 3;
+        let timerSeconds = 60 * 60; // 60 Menit
+        let timerInterval = null;
+        let isExamFinished = false;
+
+        // Detect Tab Switch / Minimize Window
+        document.addEventListener("visibilitychange", function() {
+            if (!isExamFinished && !document.getElementById("screen-exam").classList.contains("hidden") && document.visibilityState === "hidden") {
+                triggerCheatViolation("Terdeteksi berpindah tab atau meninggalkan jendela ujian!");
+            }
+        });
+
+        // Detect Window Blur
+        window.addEventListener("blur", function() {
+            if (!isExamFinished && !document.getElementById("screen-exam").classList.contains("hidden")) {
+                triggerCheatViolation("Terdeteksi kehilangan fokus jendela ujian (Switch window/app)!");
+            }
+        });
+
+        // Disable Keyboard Shortcuts
+        document.addEventListener("keydown", function(e) {
+            if (isExamFinished) return;
+            
+            if (
+                e.key === "F12" ||
+                (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "i" || e.key === "J" || e.key === "j" || e.key === "C" || e.key === "c")) ||
+                (e.ctrlKey && (e.key === "u" || e.key === "U" || e.key === "c" || e.key === "C" || e.key === "v" || e.key === "V" || e.key === "a" || e.key === "A"))
+            ) {
+                e.preventDefault();
+                triggerCheatViolation("Penggunaan tombol pintasan keyboard (Shortcut) tidak diizinkan!");
+            }
+        });
+
+        // Fullscreen Exit Handler
+        document.addEventListener("fullscreenchange", function() {
+            if (!isExamFinished && !document.fullscreenElement && !document.getElementById("screen-exam").classList.contains("hidden")) {
+                triggerCheatViolation("Anda keluar dari mode Layar Penuh (Fullscreen)!");
+            }
+        });
+
+        function triggerCheatViolation(reason) {
+            if (isExamFinished) return;
+            cheatViolations++;
+            
+            const badge = document.getElementById("cheat-badge");
+            badge.className = "bg-red-500/20 text-red-400 border border-red-500/30 text-xs px-3 py-1.5 rounded-full flex items-center space-x-1.5 font-semibold";
+            badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <span>Pelanggaran: ${cheatViolations}/${maxViolations}</span>`;
+
+            if (cheatViolations >= maxViolations) {
+                document.getElementById("cheat-modal").classList.add("hidden");
+                alertCustom("AKSES UJIAN DIBATALKAN! Anda telah melakukan kecurangan berulang kali (3x). Jawaban Anda dikirim otomatis.");
+                submitExam();
+            } else {
+                document.getElementById("cheat-modal-msg").innerHTML = `${reason}<br><br><b class="text-red-600">Peringatan Ke-${cheatViolations} dari ${maxViolations}!</b> Batas maksimal pelanggaran adalah 3x.`;
+                document.getElementById("cheat-modal").classList.remove("hidden");
+            }
+        }
+
+        function resolveCheatWarning() {
+            document.getElementById("cheat-modal").classList.add("hidden");
+            requestFullscreen();
+        }
+
+        function requestFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(() => {});
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        }
+
+        function startExam() {
+            const nameInput = document.getElementById("student-name").value.trim();
+            const classInput = document.getElementById("student-class").value;
+
+            if (!nameInput) {
+                alertCustom("Mohon masukkan nama lengkap Anda!");
+                return;
+            }
+            if (!classInput) {
+                alertCustom("Mohon pilih kelas Anda!");
+                return;
+            }
+
+            studentData.name = nameInput;
+            studentData.class = classInput;
+
+            requestFullscreen();
+
+            document.getElementById("screen-login").classList.add("hidden");
+            document.getElementById("screen-exam").classList.remove("hidden");
+            document.getElementById("header-status").classList.remove("hidden");
+
+            renderQuestionGrid();
+            loadQuestion(0);
+            startTimer();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    alertCustom("Waktu Ujian Telah Habis! Jawaban Anda dikirim otomatis.");
+                    submitExam();
+                    return;
+                }
+                timerSeconds--;
+                const mins = Math.floor(timerSeconds / 60);
+                const secs = timerSeconds % 60;
+                document.getElementById("timer-display").innerText = 
+                    `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            }, 1000);
+        }
+
+        function loadQuestion(idx) {
+            currentQuestionIdx = idx;
+            const q = questionsData[idx];
+
+            document.getElementById("question-category").innerText = q.category;
+            document.getElementById("question-counter").innerText = `Soal ${idx + 1} dari ${questionsData.length}`;
+            document.getElementById("question-text").innerText = `${idx + 1}. ${q.text}`;
+
+            const container = document.getElementById("options-container");
+            container.innerHTML = "";
+
+            const labels = ["A", "B", "C", "D"];
+            q.options.forEach((opt, oIdx) => {
+                const isSelected = userAnswers[idx] === oIdx;
+                const optElement = document.createElement("div");
+                optElement.onclick = () => selectOption(oIdx);
+                optElement.className = `p-4 rounded-xl border-2 transition cursor-pointer flex items-center justify-between ${
+                    isSelected 
+                        ? 'border-indigo-600 bg-indigo-50/70 text-indigo-950 font-semibold shadow-sm' 
+                        : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
+                }`;
+
+                optElement.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <span class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'}">
+                            ${labels[oIdx]}
+                        </span>
+                        <span class="text-sm sm:text-base">${opt}</span>
+                    </div>
+                    ${isSelected ? '<i class="fa-solid fa-circle-check text-indigo-600 text-lg"></i>' : ''}
+                `;
+                container.appendChild(optElement);
+            });
+
+            document.getElementById("btn-prev").disabled = idx === 0;
+            
+            if (idx === questionsData.length - 1) {
+                document.getElementById("btn-next").classList.add("hidden");
+                document.getElementById("btn-finish").classList.remove("hidden");
+            } else {
+                document.getElementById("btn-next").classList.remove("hidden");
+                document.getElementById("btn-finish").classList.add("hidden");
+            }
+
+            renderQuestionGrid();
+        }
+
+        function selectOption(optIdx) {
+            userAnswers[currentQuestionIdx] = optIdx;
+            loadQuestion(currentQuestionIdx);
+            updateAnsweredCount();
+        }
+
+        function navigateQuestion(direction) {
+            const nextIdx = currentQuestionIdx + direction;
+            if (nextIdx >= 0 && nextIdx < questionsData.length) {
+                loadQuestion(nextIdx);
+            }
+        }
+
+        function renderQuestionGrid() {
+            const grid = document.getElementById("question-grid");
+            grid.innerHTML = "";
+
+            questionsData.forEach((_, idx) => {
+                const isCurrent = idx === currentQuestionIdx;
+                const isAnswered = userAnswers[idx] !== null;
+
+                let btnStyle = "bg-slate-100 text-slate-600 hover:bg-slate-200";
+                if (isCurrent) {
+                    btnStyle = "bg-indigo-600 text-white font-bold ring-2 ring-indigo-300";
+                } else if (isAnswered) {
+                    btnStyle = "bg-emerald-500 text-white font-medium";
+                }
+
+                const btn = document.createElement("button");
+                btn.className = `h-9 w-full rounded-lg text-xs transition flex items-center justify-center ${btnStyle}`;
+                btn.innerText = idx + 1;
+                btn.onclick = () => loadQuestion(idx);
+                grid.appendChild(btn);
+            });
+            updateAnsweredCount();
+        }
+
+        function updateAnsweredCount() {
+            const count = userAnswers.filter(a => a !== null).length;
+            document.getElementById("answered-count").innerText = `${count}/${questionsData.length} Terjawab`;
+        }
+
+        function confirmSubmitExam() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            const unanswered = questionsData.length - answered;
+            
+            let msg = `Anda telah menjawab ${answered} dari total ${questionsData.length} soal.`;
+            if (unanswered > 0) {
+                msg += ` Masih ada <b class="text-red-600">${unanswered} soal</b> yang belum dijawab!`;
+            }
+            msg += "<br>Apakah Anda yakin ingin mengirim hasil ujian?";
+
+            document.getElementById("submit-modal-msg").innerHTML = msg;
+            document.getElementById("submit-modal").classList.remove("hidden");
+        }
+
+        function closeSubmitModal() {
+            document.getElementById("submit-modal").classList.add("hidden");
+        }
+
+        function submitExam() {
+            isExamFinished = true;
+            clearInterval(timerInterval);
+            closeSubmitModal();
+
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch(() => {});
+            }
+
+            let correctCount = 0;
+            userAnswers.forEach((ans, idx) => {
+                if (ans === questionsData[idx].correct) {
+                    correctCount++;
+                }
+            });
+
+            const totalSoal = questionsData.length;
+            const score = Math.round((correctCount / totalSoal) * 100);
+
+            // Record timestamp
+            const now = new Date();
+            const timeStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}, ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            // Save to LocalStorage Leaderboard
+            saveToLeaderboard({
+                name: studentData.name,
+                class: studentData.class,
+                score: score,
+                correct: correctCount,
+                violations: cheatViolations,
+                time: timeStr
+            });
+
+            // Switch Screen
+            document.getElementById("screen-exam").classList.add("hidden");
+            document.getElementById("header-status").classList.add("hidden");
+            document.getElementById("screen-result").classList.remove("hidden");
+
+            // Populate Results Summary
+            document.getElementById("result-score").innerText = score;
+            document.getElementById("res-student-name").innerText = studentData.name;
+            document.getElementById("res-student-class").innerText = studentData.class;
+            document.getElementById("res-correct-count").innerText = `${correctCount} Benar / ${totalSoal - correctCount} Salah`;
+            
+            const cheatEl = document.getElementById("res-cheat-count");
+            cheatEl.innerText = `${cheatViolations} Kali`;
+            if (cheatViolations > 0) {
+                cheatEl.className = "font-bold text-red-600 text-sm";
+            }
+
+            const headerBg = document.getElementById("result-header-bg");
+            const statusText = document.getElementById("result-status-text");
+
+            if (score >= 75) {
+                headerBg.className = "bg-gradient-to-r from-emerald-600 to-teal-700 p-6 text-white text-center";
+                statusText.innerText = "Selamat! Anda Lulus Kriteria Ketuntasan Minimal (KKM).";
+            } else {
+                headerBg.className = "bg-gradient-to-r from-amber-600 to-rose-700 p-6 text-white text-center";
+                statusText.innerText = "Nilai Anda di bawah KKM (75). Silakan pelajari kembali pembahasan di bawah ini.";
+            }
+
+            renderExplanations('all');
+            renderLeaderboardTable();
+        }
+
+        function renderExplanations(filter) {
+            const container = document.getElementById("explanations-list");
+            container.innerHTML = "";
+
+            const labels = ["A", "B", "C", "D"];
+
+            questionsData.forEach((q, idx) => {
+                const userAns = userAnswers[idx];
+                const isCorrect = userAns === q.correct;
+
+                if (filter === 'correct' && !isCorrect) return;
+                if (filter === 'wrong' && isCorrect) return;
+
+                const card = document.createElement("div");
+                card.className = `bg-white rounded-2xl p-5 border shadow-sm ${
+                    isCorrect ? 'border-emerald-200' : 'border-red-200'
+                }`;
+
+                let statusBadge = isCorrect 
+                    ? `<span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-check mr-1"></i> Jawaban Benar</span>`
+                    : `<span class="bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-xmark mr-1"></i> Jawaban Salah / Kosong</span>`;
+
+                let userChoiceText = userAns !== null ? `${labels[userAns]}. ${q.options[userAns]}` : `<i class="text-slate-400">Tidak Dijawab</i>`;
+                let correctChoiceText = `${labels[q.correct]}. ${q.options[q.correct]}`;
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3 gap-2">
+                        <span class="text-xs font-bold text-slate-500 uppercase">${q.category}</span>
+                        ${statusBadge}
+                    </div>
+
+                    <p class="font-semibold text-slate-800 text-sm sm:text-base mb-4 leading-relaxed">
+                        ${idx + 1}. ${q.text}
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm mb-4">
+                        <div class="p-3 rounded-xl ${isCorrect ? 'bg-emerald-50 border border-emerald-200 text-emerald-900' : 'bg-red-50 border border-red-200 text-red-900'}">
+                            <span class="block text-xs font-bold opacity-75 mb-1">Jawaban Anda:</span>
+                            <span class="font-semibold">${userChoiceText}</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800">
+                            <span class="block text-xs font-bold opacity-75 mb-1">Kunci Jawaban Benar:</span>
+                            <span class="font-semibold text-emerald-700">${correctChoiceText}</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-indigo-50/60 border border-indigo-100 rounded-xl p-3.5 text-xs sm:text-sm text-indigo-900">
+                        <div class="font-bold flex items-center mb-1 text-indigo-950">
+                            <i class="fa-solid fa-lightbulb text-amber-500 mr-2"></i> Pembahasan & Tata Bahasa:
+                        </div>
+                        <p class="leading-relaxed text-indigo-900/90">${q.explanation}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            if (container.children.length === 0) {
+                container.innerHTML = `<div class="bg-white p-8 rounded-xl text-center text-slate-500 text-sm">Tidak ada soal dalam kategori filter ini.</div>`;
+            }
+        }
+
+        function filterExplanations(type) {
+            document.getElementById("filter-all").className = "px-3 py-1.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg text-xs font-semibold";
+            document.getElementById("filter-correct").className = "px-3 py-1.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg text-xs font-semibold";
+            document.getElementById("filter-wrong").className = "px-3 py-1.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg text-xs font-semibold";
+
+            if (type === 'all') document.getElementById("filter-all").className = "px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold";
+            if (type === 'correct') document.getElementById("filter-correct").className = "px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-semibold";
+            if (type === 'wrong') document.getElementById("filter-wrong").className = "px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-semibold";
+
+            renderExplanations(type);
+        }
+
+        function switchResultTab(tab) {
+            const tabExplanations = document.getElementById("tab-content-explanations");
+            const tabLeaderboard = document.getElementById("tab-content-leaderboard");
+            const btnExplanations = document.getElementById("tab-btn-explanations");
+            const btnLeaderboard = document.getElementById("tab-btn-leaderboard");
+
+            if (tab === 'explanations') {
+                tabExplanations.classList.remove("hidden");
+                tabLeaderboard.classList.add("hidden");
+                btnExplanations.className = "flex-1 py-2.5 px-4 rounded-lg font-semibold text-xs sm:text-sm text-indigo-600 bg-indigo-50 border border-indigo-200 transition flex items-center justify-center space-x-2";
+                btnLeaderboard.className = "flex-1 py-2.5 px-4 rounded-lg font-semibold text-xs sm:text-sm text-slate-600 hover:bg-slate-100 transition flex items-center justify-center space-x-2";
+            } else {
+                tabExplanations.classList.add("hidden");
+                tabLeaderboard.classList.remove("hidden");
+                btnLeaderboard.className = "flex-1 py-2.5 px-4 rounded-lg font-semibold text-xs sm:text-sm text-indigo-600 bg-indigo-50 border border-indigo-200 transition flex items-center justify-center space-x-2";
+                btnExplanations.className = "flex-1 py-2.5 px-4 rounded-lg font-semibold text-xs sm:text-sm text-slate-600 hover:bg-slate-100 transition flex items-center justify-center space-x-2";
+                renderLeaderboardTable();
+            }
+        }
+
+        function renderLeaderboardTable() {
+            const filterClass = document.getElementById("leaderboard-filter-class").value;
+            const searchKeyword = document.getElementById("leaderboard-search").value.toLowerCase().trim();
+            const rawData = getLeaderboardData();
+
+            let filtered = rawData.filter(item => {
+                const matchClass = filterClass === "ALL" || item.class === filterClass;
+                const matchSearch = item.name.toLowerCase().includes(searchKeyword);
+                return matchClass && matchSearch;
+            });
+
+            filtered.sort((a, b) => b.score - a.score || a.violations - b.violations);
+
+            const totalStudents = filtered.length;
+            const avgScore = totalStudents > 0 ? Math.round(filtered.reduce((acc, curr) => acc + curr.score, 0) / totalStudents) : 0;
+            const maxScore = totalStudents > 0 ? Math.max(...filtered.map(f => f.score)) : 0;
+
+            document.getElementById("stat-total-students").innerText = totalStudents;
+            document.getElementById("stat-avg-score").innerText = avgScore;
+            document.getElementById("stat-max-score").innerText = maxScore;
+
+            const tbody = document.getElementById("leaderboard-table-body");
+            tbody.innerHTML = "";
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">Tidak ada data siswa ditemukan.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach((item, index) => {
+                const isCurrentUser = item.name === studentData.name && item.class === studentData.class;
+                const tr = document.createElement("tr");
+                tr.className = isCurrentUser ? "bg-amber-50/80 font-semibold" : "hover:bg-slate-50";
+
+                let rankBadge = `<span class="font-bold text-slate-600">${index + 1}</span>`;
+                if (index === 0) rankBadge = `<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md font-bold text-xs"><i class="fa-solid fa-crown text-amber-500 mr-1"></i>1</span>`;
+                else if (index === 1) rankBadge = `<span class="bg-slate-200 text-slate-800 px-2 py-0.5 rounded-md font-bold text-xs">2</span>`;
+                else if (index === 2) rankBadge = `<span class="bg-amber-700/10 text-amber-900 px-2 py-0.5 rounded-md font-bold text-xs">3</span>`;
+
+                let violationText = item.violations === 0 
+                    ? `<span class="text-emerald-600 font-medium">0 (Bersih)</span>` 
+                    : `<span class="text-red-600 font-semibold">${item.violations}x Melanggar</span>`;
+
+                tr.innerHTML = `
+                    <td class="p-3 text-center">${rankBadge}</td>
+                    <td class="p-3 font-medium text-slate-800">
+                        ${item.name}
+                        ${isCurrentUser ? '<span class="ml-2 text-[10px] bg-indigo-600 text-white px-1.5 py-0.5 rounded">Anda</span>' : ''}
+                    </td>
+                    <td class="p-3 text-center text-slate-600">${item.class}</td>
+                    <td class="p-3 text-center font-bold ${item.score >= 75 ? 'text-emerald-600' : 'text-red-600'}">${item.score}</td>
+                    <td class="p-3 text-center text-xs">${violationText}</td>
+                    <td class="p-3 text-center text-xs text-slate-400">${item.time || '-'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openLeaderboardModal() {
+            document.getElementById("leaderboard-modal").classList.remove("hidden");
+            renderModalLeaderboardTable();
+        }
+
+        function closeLeaderboardModal() {
+            document.getElementById("leaderboard-modal").classList.add("hidden");
+        }
+
+        function renderModalLeaderboardTable() {
+            const filterClass = document.getElementById("modal-filter-class").value;
+            const rawData = getLeaderboardData();
+
+            let filtered = rawData.filter(item => filterClass === "ALL" || item.class === filterClass);
+            filtered.sort((a, b) => b.score - a.score || a.violations - b.violations);
+
+            const tbody = document.getElementById("modal-leaderboard-tbody");
+            tbody.innerHTML = "";
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400">Belum ada rekap nilai untuk kelas ini.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach((item, index) => {
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-slate-50";
+
+                tr.innerHTML = `
+                    <td class="p-3 text-center font-bold text-slate-500">${index + 1}</td>
+                    <td class="p-3 font-semibold text-slate-800">${item.name}</td>
+                    <td class="p-3 text-center text-slate-600">${item.class}</td>
+                    <td class="p-3 text-center font-bold text-indigo-600">${item.score}</td>
+                    <td class="p-3 text-center">${item.score >= 75 ? '<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold">LULUS</span>' : '<span class="bg-red-100 text-red-800 text-[10px] px-2 py-0.5 rounded-full font-bold">REMIDIAL</span>'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function alertCustom(msg) {
+            const div = document.createElement("div");
+            div.className = "fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4";
+            div.innerHTML = `
+                <div class="bg-white rounded-2xl max-w-xs w-full p-5 text-center shadow-2xl space-y-4">
+                    <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </div>
+                    <p class="text-slate-700 font-medium text-sm">${msg}</p>
+                    <button onclick="this.parentElement.parentElement.remove()" class="w-full py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg">
+                        Tutup
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(div);
+        }
+    </script>
+</body>
+</html>
