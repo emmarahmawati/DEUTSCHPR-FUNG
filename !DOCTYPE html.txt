@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Prüfung — Ujian Anti Nyontek</title>
+<style>
+  :root{
+    --paper:#F5F6F8;
+    --surface:#FFFFFF;
+    --ink:#1B2430;
+    --ink-soft:#5B6472;
+    --line:#DDE2E8;
+    --navy:#2C4A7C;
+    --navy-dark:#1F3660;
+    --gold:#B8873A;
+    --gold-soft:#F3E7D0;
+    --danger:#B3432B;
+    --danger-soft:#F7E4DE;
+    --success:#2E7D5B;
+    --success-soft:#E1F0E7;
+    --serif: "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+    --sans: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--sans);
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    -webkit-user-select:none;
+    user-select:none;
+  }
+  #app{max-width:920px;margin:0 auto;padding:28px 20px 60px;}
+
+  .brandbar{
+    display:flex;align-items:baseline;justify-content:space-between;
+    border-bottom:2px solid var(--navy);
+    padding-bottom:14px;margin-bottom:28px;
+  }
+  .brandbar .title{font-family:var(--serif);font-size:22px;letter-spacing:.3px;color:var(--navy-dark);}
+  .brandbar .sub{font-size:12.5px;color:var(--ink-soft);}
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:32px;
+  }
+
+  h2.section-title{
+    font-family:var(--serif);
+    font-size:24px;
+    margin:0 0 6px;
+    color:var(--navy-dark);
+  }
+  p.section-desc{color:var(--ink-soft);font-size:14px;margin:0 0 26px;line-height:1.5;}
+
+  label{display:block;font-size:13px;color:var(--ink-soft);margin-bottom:6px;margin-top:18px;}
+  label:first-of-type{margin-top:0;}
+  input[type=text], select{
+    width:100%;padding:11px 12px;font-size:15px;
+    border:1px solid var(--line);border-radius:4px;
+    font-family:var(--sans);background:#fff;color:var(--ink);
+  }
+  input[type=text]:focus, select:focus{outline:2px solid var(--navy);outline-offset:1px;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:560px){.grid2{grid-template-columns:1fr;}}
+
+  button{
+    font-family:var(--sans);cursor:pointer;border:none;border-radius:4px;
+    font-size:15px;padding:12px 22px;
+  }
+  .btn-primary{background:var(--navy);color:#fff;}
+  .btn-primary:hover{background:var(--navy-dark);}
+  .btn-primary:disabled{background:#A9B4C4;cursor:not-allowed;}
+  .btn-ghost{background:transparent;color:var(--navy);border:1px solid var(--navy);}
+  .btn-ghost:hover{background:#EEF2F8;}
+  .btn-danger{background:var(--danger);color:#fff;}
+
+  .row-actions{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap;}
+
+  /* ---- EXAM ---- */
+  .exam-header{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    margin-bottom:18px;gap:16px;flex-wrap:wrap;
+  }
+  .exam-id{font-size:13px;color:var(--ink-soft);line-height:1.6;}
+  .exam-id b{color:var(--ink);}
+  .timer{
+    font-family:var(--serif);font-size:26px;color:var(--navy-dark);
+    background:var(--gold-soft);border:1px solid var(--gold);
+    padding:6px 16px;border-radius:4px;min-width:100px;text-align:center;
+  }
+  .timer.low{background:var(--danger-soft);border-color:var(--danger);color:var(--danger);}
+
+  .warn-banner{
+    background:var(--danger-soft);border:1px solid var(--danger);color:var(--danger);
+    padding:12px 16px;border-radius:4px;font-size:13.5px;margin-bottom:18px;
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+
+  .qnav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px;}
+  .qnav button{
+    width:32px;height:32px;padding:0;font-size:12.5px;
+    border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:4px;
+  }
+  .qnav button.current{border-color:var(--navy);color:var(--navy);font-weight:600;}
+  .qnav button.answered{background:var(--navy);color:#fff;border-color:var(--navy);}
+
+  .qnumber{font-size:12.5px;color:var(--ink-soft);letter-spacing:.5px;margin-bottom:8px;}
+  .qtext{font-family:var(--serif);font-size:19px;line-height:1.5;margin-bottom:20px;white-space:pre-line;color:var(--ink);}
+
+  .option{
+    display:flex;align-items:flex-start;gap:12px;
+    border:1px solid var(--line);border-radius:5px;
+    padding:13px 14px;margin-bottom:10px;cursor:pointer;
+    transition:border-color .12s, background .12s;
+  }
+  .option:hover{border-color:var(--navy);}
+  .option.selected{border-color:var(--navy);background:#EEF2F8;}
+  .option .opt-letter{
+    font-family:var(--serif);font-weight:600;color:var(--navy);min-width:20px;
+  }
+  .option .opt-text{font-size:15px;color:var(--ink);}
+
+  .exam-footer{display:flex;justify-content:space-between;margin-top:24px;}
+
+  /* ---- RESULT ---- */
+  .score-hero{
+    display:flex;align-items:center;gap:26px;
+    border-bottom:1px solid var(--line);padding-bottom:24px;margin-bottom:24px;
+    flex-wrap:wrap;
+  }
+  .score-num{font-family:var(--serif);font-size:56px;color:var(--navy-dark);line-height:1;}
+  .score-meta{font-size:13.5px;color:var(--ink-soft);line-height:1.7;}
+  .score-meta b{color:var(--ink);}
+
+  .review-item{border-bottom:1px solid var(--line);padding:16px 0;}
+  .review-item:last-child{border-bottom:none;}
+  .review-q{font-size:14.5px;margin-bottom:8px;white-space:pre-line;}
+  .review-q .qi{color:var(--ink-soft);margin-right:6px;}
+  .review-ans{font-size:13.5px;margin:3px 0;}
+  .tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;}
+  .tag.correct{background:var(--success-soft);color:var(--success);}
+  .tag.wrong{background:var(--danger-soft);color:var(--danger);}
+  .explain{font-size:13.5px;color:var(--ink-soft);margin-top:6px;line-height:1.5;padding-left:2px;border-left:3px solid var(--gold);padding-left:10px;}
+
+  /* ---- LEADERBOARD ---- */
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft);font-weight:600;}
+  tr.rank1 td:first-child{color:var(--gold);font-weight:700;}
+  tr.rank2 td:first-child, tr.rank3 td:first-child{color:var(--ink-soft);font-weight:700;}
+  .filter-bar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+  .filter-bar select{width:auto;}
+  .empty-state{color:var(--ink-soft);font-size:14px;padding:30px 0;text-align:center;}
+
+  .nav-tabs{display:flex;gap:6px;margin-bottom:22px;}
+  .nav-tabs button{
+    background:transparent;border:1px solid var(--line);color:var(--ink-soft);font-size:13px;padding:8px 16px;
+  }
+  .nav-tabs button.active{border-color:var(--navy);color:var(--navy);background:#EEF2F8;font-weight:600;}
+
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="brandbar">
+    <div class="title">Prüfung Deutsch</div>
+    <div class="sub" id="brandSub">Sistem Ujian Anti Nyontek</div>
+  </div>
+
+  <div id="navTabs" class="nav-tabs hidden">
+    <button data-tab="leaderboard" id="tabLeaderboard">Rekap &amp; Leaderboard</button>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="screen-login" class="card">
+    <h2 class="section-title">Mulai Ujian</h2>
+    <p class="section-desc">Isi data berikut untuk memulai. Ujian berlangsung selama 40 menit dengan 40 soal pilihan ganda. Setelah selesai, nilai dan pembahasan langsung tampil.</p>
+
+    <label for="inpName">Nama Lengkap</label>
+    <input type="text" id="inpName" placeholder="Tulis nama lengkap sesuai absen" autocomplete="off">
+
+    <div class="grid2">
+      <div>
+        <label for="inpTingkat">Tingkat</label>
+        <select id="inpTingkat">
+          <option value="XI">Kelas XI</option>
+          <option value="XII">Kelas XII</option>
+        </select>
+      </div>
+      <div>
+        <label for="inpFase">Kelas</label>
+        <select id="inpFase">
+          <option>F1</option><option>F2</option><option>F3</option><option>F4</option>
+          <option>F5</option><option>F6</option><option>F7</option><option>F8</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row-actions">
+      <button class="btn-primary" id="btnStart">Mulai Ujian</button>
+      <button class="btn-ghost" id="btnGoLeaderboardFromLogin">Lihat Rekap &amp; Leaderboard</button>
+    </div>
+    <p style="font-size:12px;color:var(--ink-soft);margin-top:20px;">
+      Catatan: selama ujian, salin-tempel dinonaktifkan dan sistem mencatat bila kamu berpindah tab/jendela. Tiga kali pelanggaran akan menghentikan ujian secara otomatis.
+    </p>
+  </div>
+
+  <!-- EXAM -->
+  <div id="screen-exam" class="card hidden">
+    <div id="warnBanner" class="warn-banner hidden"></div>
+    <div class="exam-header">
+      <div class="exam-id">
+        Nama: <b id="hdrName"></b><br>
+        Kelas: <b id="hdrClass"></b>
+      </div>
+      <div class="timer" id="timerBox">40:00</div>
+    </div>
+
+    <div class="qnav" id="qnav"></div>
+
+    <div class="qnumber" id="qNumberLabel">SOAL 1 / 40</div>
+    <div class="qtext" id="qText"></div>
+    <div id="optionsBox"></div>
+
+    <div class="exam-footer">
+      <button class="btn-ghost" id="btnPrev">← Sebelumnya</button>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-ghost" id="btnNext">Berikutnya →</button>
+        <button class="btn-primary" id="btnSubmit">Selesai &amp; Kumpulkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="screen-result" class="card hidden">
+    <h2 class="section-title">Hasil Ujian</h2>
+    <div class="score-hero">
+      <div class="score-num" id="resScore">0</div>
+      <div class="score-meta">
+        Nama: <b id="resName"></b><br>
+        Kelas: <b id="resClass"></b><br>
+        Benar: <b id="resCorrect"></b> dari 40 soal<br>
+        Waktu pengerjaan: <b id="resTime"></b><br>
+        Pelanggaran tercatat: <b id="resViol"></b>
+      </div>
+    </div>
+    <h2 class="section-title" style="font-size:18px;">Pembahasan</h2>
+    <div id="reviewList"></div>
+    <div class="row-actions">
+      <button class="btn-primary" id="btnToLeaderboard">Lihat Leaderboard</button>
+      <button class="btn-ghost" id="btnBackLogin">Kembali ke Halaman Awal</button>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div id="screen-leaderboard" class="card hidden">
+    <h2 class="section-title">Rekap &amp; Leaderboard</h2>
+    <p class="section-desc">Menampilkan hasil seluruh siswa yang telah mengerjakan ujian ini.</p>
+    <div class="filter-bar">
+      <select id="filterClass"><option value="ALL">Semua Kelas</option></select>
+      <button class="btn-ghost" id="btnRefreshBoard">Muat Ulang</button>
+    </div>
+    <div id="boardWrap"></div>
+    <div class="row-actions">
+      <button class="btn-ghost" id="btnBackLogin2">Kembali ke Halaman Awal</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+
+// ---------------------------------------------------------------
+// DATA SOAL
+// ---------------------------------------------------------------
+const QUESTIONS = [
+{no:1,text:"A. BEGRÜSSUNG\nWas sagt man am Morgen zur Begrüßung?",opts:{A:"Guten Abend!",B:"Gute Nacht!",C:"Guten Morgen!",D:"Auf Wiedersehen!"},correct:"C",explain:"„Guten Morgen!“ adalah ucapan sapaan yang digunakan pada pagi hari."},
+{no:2,text:"Welche Begrüßung passt zu einer formellen Situation?",opts:{A:"Tschüss!",B:"Hallo!",C:"Guten Tag!",D:"Bis bald!"},correct:"C",explain:"„Guten Tag!“ digunakan dalam situasi formal, sedangkan Hallo/Tschüss bersifat santai."},
+{no:3,text:"Welche Begrüßung ist eher informell?",opts:{A:"Auf Wiedersehen!",B:"Guten Tag!",C:"Hallo!",D:"Guten Abend!"},correct:"C",explain:"„Hallo!“ adalah sapaan informal/santai, biasa dipakai pada teman sebaya."},
+{no:4,text:"Was sagt man normalerweise beim Abschied?",opts:{A:"Guten Morgen!",B:"Auf Wiedersehen!",C:"Guten Tag!",D:"Wie geht es dir?"},correct:"B",explain:"„Auf Wiedersehen!“ diucapkan saat berpisah/pamit."},
+{no:5,text:"Ergänze den Dialog!\nA: Guten Morgen!\nB: _____________!",opts:{A:"Gute Nacht",B:"Guten Morgen",C:"Auf Wiedersehen",D:"Danke"},correct:"B",explain:"Sapaan pagi hari dibalas dengan sapaan pagi hari yang sama, „Guten Morgen“."},
+{no:6,text:"Was sagt man, wenn man abends schlafen geht?",opts:{A:"Guten Tag!",B:"Guten Abend!",C:"Gute Nacht!",D:"Guten Morgen!"},correct:"C",explain:"„Gute Nacht!“ diucapkan ketika seseorang akan tidur di malam hari."},
+
+{no:7,text:"B. SICH VORSTELLEN\nWie sagt man seinen Namen auf Deutsch?",opts:{A:"Ich heiße Anna.",B:"Ich komme Anna.",C:"Ich wohne Anna.",D:"Ich bin heiße Anna."},correct:"A",explain:"Pola „Ich heiße...“ digunakan untuk menyebutkan nama diri."},
+{no:8,text:"Was bedeutet „Wie heißt du?“",opts:{A:"Wo wohnst du?",B:"Wie alt bist du?",C:"Wie ist dein Name?",D:"Woher kommst du?"},correct:"C",explain:"„Wie heißt du?“ berarti „Siapa namamu?“."},
+{no:9,text:"Welche Antwort passt zu „Wie heißt du?“",opts:{A:"Ich bin 17 Jahre alt.",B:"Ich komme aus Indonesien.",C:"Ich heiße Budi.",D:"Ich wohne in Ambon."},correct:"C",explain:"Jawaban untuk pertanyaan nama menggunakan pola „Ich heiße...“."},
+{no:10,text:"Wie sagt man „Saya berasal dari Indonesia“ auf Deutsch?",opts:{A:"Ich wohne Indonesien.",B:"Ich komme aus Indonesien.",C:"Ich bin Indonesien.",D:"Ich heiße Indonesien."},correct:"B",explain:"Asal negara diungkapkan dengan pola „Ich komme aus...“."},
+{no:11,text:"Was bedeutet „Woher kommst du?“",opts:{A:"Wie heißt du?",B:"Wo wohnst du?",C:"Aus welchem Land oder Ort kommst du?",D:"Wie alt bist du?"},correct:"C",explain:"„Woher kommst du?“ menanyakan asal negara/tempat seseorang."},
+{no:12,text:"Welche Antwort passt zu „Woher kommst du?“",opts:{A:"Ich heiße Sinta.",B:"Ich bin 16 Jahre alt.",C:"Ich komme aus Indonesien.",D:"Ich wohne in Ambon."},correct:"C",explain:"Jawaban pertanyaan asal negara menggunakan pola „Ich komme aus...“."},
+{no:13,text:"Wie sagt man „Saya tinggal di Ambon“ auf Deutsch?",opts:{A:"Ich komme aus Ambon.",B:"Ich heiße Ambon.",C:"Ich wohne in Ambon.",D:"Ich bin Ambon."},correct:"C",explain:"Tempat tinggal diungkapkan dengan pola „Ich wohne in...“."},
+{no:14,text:"Welche Frage passt zu der Antwort „Ich bin 16 Jahre alt“?",opts:{A:"Wie heißt du?",B:"Wie alt bist du?",C:"Wo wohnst du?",D:"Woher kommst du?"},correct:"B",explain:"Jawaban tentang usia sesuai dengan pertanyaan „Wie alt bist du?“."},
+
+{no:15,text:"C. ANDERE VORSTELLEN\nDu stellst einen Freund vor. Welche Aussage ist richtig?",opts:{A:"Das ist mein Freund, Budi.",B:"Das bin mein Freund, Budi.",C:"Das bist mein Freund, Budi.",D:"Das sind mein Freund, Budi."},correct:"A",explain:"Untuk memperkenalkan satu orang digunakan „Das ist mein Freund...“ dengan kata kerja „ist“."},
+{no:16,text:"Du stellst eine Freundin vor. Welche Aussage ist richtig?",opts:{A:"Das ist meine Freundin, Anna.",B:"Das sind meine Freundin, Anna.",C:"Das bist meine Freundin, Anna.",D:"Das bin meine Freundin, Anna."},correct:"A",explain:"„Freundin“ (feminin) menggunakan „meine“, dan kata kerjanya tetap „ist“."},
+{no:17,text:"Ergänze den Satz!\nDas ist ______ Freund, Ali.",opts:{A:"mein",B:"meine",C:"meinen",D:"meiner"},correct:"A",explain:"„Freund“ adalah kata benda maskulin, sehingga menggunakan kata ganti kepemilikan „mein“."},
+{no:18,text:"Ergänze den Satz!\nDas ist ______ Freundin, Sinta.",opts:{A:"mein",B:"meine",C:"meinen",D:"meiner"},correct:"B",explain:"„Freundin“ adalah kata benda feminin, sehingga menggunakan „meine“."},
+{no:19,text:"Lies den Dialog!\nA: Wer ist das?\nB: Das ist _____________.",opts:{A:"meine Schwester",B:"ich Schwester",C:"mein Schwester",D:"mich Schwester"},correct:"A",explain:"„Schwester“ (saudari) adalah kata benda feminin, sehingga digunakan „meine Schwester“."},
+{no:20,text:"Lies den Text!\nDas ist Maria. Sie kommt aus Indonesien.\nWelche Aussage ist richtig?",opts:{A:"Maria ist ein Mann.",B:"Maria ist eine Frau.",C:"Maria kommt aus Deutschland.",D:"Maria wohnt in Deutschland."},correct:"B",explain:"Karena Maria disebut dengan kata ganti „sie“ (dia perempuan), maka Maria adalah seorang perempuan."},
+{no:21,text:"Lies den Text!\nDas ist Paul. Er kommt aus Deutschland.\nWie heißt die Person?",opts:{A:"Paul",B:"Maria",C:"Anna",D:"Sinta"},correct:"A",explain:"Nama orang yang disebutkan dalam teks adalah Paul."},
+{no:22,text:"Ergänze den Dialog!\nA: Wer ist das?\nB: Das ist mein Bruder.\nA: Wie heißt er?\nB: _____________ heißt Lukas.",opts:{A:"Sie",B:"Er",C:"Ich",D:"Wir"},correct:"B",explain:"„Bruder“ (saudara laki-laki) digantikan dengan kata ganti „er“."},
+
+{no:23,text:"D. ZAHLEN\nWelche Zahl ist „sieben“?",opts:{A:"6",B:"7",C:"8",D:"9"},correct:"B",explain:"„sieben“ artinya angka 7."},
+{no:24,text:"Welche Zahl bedeutet „zehn“?",opts:{A:"8",B:"9",C:"10",D:"11"},correct:"C",explain:"„zehn“ artinya angka 10."},
+{no:25,text:"Wie schreibt man die Zahl 12 auf Deutsch?",opts:{A:"zwölf",B:"zehn",C:"dreizehn",D:"zwanzig"},correct:"A",explain:"Angka 12 dalam bahasa Jerman adalah „zwölf“."},
+{no:26,text:"Welche Zahl ist „fünfzehn“?",opts:{A:"5",B:"14",C:"15",D:"50"},correct:"C",explain:"„fünfzehn“ artinya angka 15."},
+{no:27,text:"Wie heißt die Zahl 20 auf Deutsch?",opts:{A:"zwölf",B:"zwanzig",C:"zwei",D:"dreißig"},correct:"B",explain:"Angka 20 dalam bahasa Jerman adalah „zwanzig“."},
+{no:28,text:"Was bedeutet „einundzwanzig“?",opts:{A:"12",B:"20",C:"21",D:"31"},correct:"C",explain:"„einundzwanzig“ artinya angka 21 (satu-dan-dua puluh)."},
+{no:29,text:"Wie schreibt man die Zahl 35 auf Deutsch?",opts:{A:"fünfunddreißig",B:"dreiundfünfzig",C:"fünfundzwanzig",D:"dreißig"},correct:"A",explain:"Angka 35 dalam bahasa Jerman adalah „fünfunddreißig“ (lima-dan-tiga puluh)."},
+{no:30,text:"Welche Zahl ist „vierzig“?",opts:{A:"14",B:"40",C:"44",D:"50"},correct:"B",explain:"„vierzig“ artinya angka 40."},
+
+{no:31,text:"E. PERSONALPRONOMEN\nWelches Personalpronomen passt zu „Maria“?",opts:{A:"er",B:"sie",C:"du",D:"wir"},correct:"B",explain:"Maria adalah nama perempuan tunggal, sehingga menggunakan kata ganti „sie“."},
+{no:32,text:"Welches Personalpronomen passt zu „Paul“?",opts:{A:"sie",B:"ich",C:"er",D:"wir"},correct:"C",explain:"Paul adalah nama laki-laki tunggal, sehingga menggunakan kata ganti „er“."},
+{no:33,text:"Welches Personalpronomen passt zu „Maria und Anna“?",opts:{A:"er",B:"sie",C:"du",D:"ich"},correct:"B",explain:"Dua orang atau lebih (jamak) menggunakan kata ganti „sie“ (mereka)."},
+{no:34,text:"Welches Personalpronomen passt zu „Budi und ich“?",opts:{A:"ihr",B:"sie",C:"wir",D:"er"},correct:"C",explain:"Gabungan orang lain dan „ich“ (saya) menggunakan kata ganti „wir“ (kami/kita)."},
+{no:35,text:"Ergänze den Satz!\nIch habe eine Schwester. ______ heißt Anna.",opts:{A:"Er",B:"Sie",C:"Wir",D:"Ihr"},correct:"B",explain:"„Schwester“ bersifat feminin tunggal, sehingga digantikan dengan „Sie“."},
+
+{no:36,text:"F. KONJUGATION\nErgänze den Satz mit der richtigen Form von „sein“!\nIch ___ Schüler.",opts:{A:"bist",B:"ist",C:"bin",D:"sind"},correct:"C",explain:"Konjugasi „sein“ untuk subjek „ich“ adalah „bin“."},
+{no:37,text:"Ergänze den Satz mit der richtigen Form von „sein“!\nDu ___ 16 Jahre alt.",opts:{A:"bin",B:"bist",C:"ist",D:"sind"},correct:"B",explain:"Konjugasi „sein“ untuk subjek „du“ adalah „bist“."},
+{no:38,text:"Ergänze den Satz mit der richtigen Form von „kommen“!\nWir ___ aus Indonesien.",opts:{A:"komme",B:"kommst",C:"kommt",D:"kommen"},correct:"D",explain:"Konjugasi „kommen“ untuk subjek „wir“ adalah „kommen“."},
+{no:39,text:"Ergänze den Satz mit der richtigen Form von „wohnen“!\nEka ___ in Ambon.",opts:{A:"wohne",B:"wohnst",C:"wohnt",D:"wohnen"},correct:"C",explain:"Eka adalah subjek orang ketiga tunggal (er/sie/es), sehingga konjugasinya „wohnt“."},
+{no:40,text:"Lies den Text und wähle die richtige Antwort!\n„Das ist Anna. Sie ___ 16 Jahre alt und ___ in Ambon.“",opts:{A:"bist – wohnst",B:"ist – wohnt",C:"bin – wohne",D:"sind – wohnen"},correct:"B",explain:"Subjek „sie“ (orang ketiga tunggal) menggunakan „ist“ dan „wohnt“."},
+];
+
+const EXAM_MINUTES = 60;
+const MAX_VIOLATIONS = 3;
+
+// ---------------------------------------------------------------
+// STATE
+// ---------------------------------------------------------------
+let state = {
+  name:"", kelas:"",
+  answers:{}, current:0,
+  timeLeft: EXAM_MINUTES*60,
+  timerHandle:null,
+  violations:0,
+  startTs:null,
+  submitted:false
+};
+
+const $ = (id)=>document.getElementById(id);
+
+function showScreen(id){
+  ["screen-login","screen-exam","screen-result","screen-leaderboard"].forEach(s=>{
+    $(s).classList.toggle("hidden", s!==id);
+  });
+  $("navTabs").classList.toggle("hidden", id==="screen-exam");
+}
+
+// ---------------------------------------------------------------
+// LOGIN
+// ---------------------------------------------------------------
+$("btnStart").addEventListener("click", ()=>{
+  const name = $("inpName").value.trim();
+  if(!name){ alert("Mohon isi nama lengkap terlebih dahulu."); return; }
+  const kelas = $("inpTingkat").value + " " + $("inpFase").value;
+  state = {
+    name, kelas,
+    answers:{}, current:0,
+    timeLeft: EXAM_MINUTES*60,
+    timerHandle:null,
+    violations:0,
+    startTs: Date.now(),
+    submitted:false
+  };
+  $("hdrName").textContent = name;
+  $("hdrClass").textContent = kelas;
+  buildQNav();
+  renderQuestion();
+  startTimer();
+  requestFullscreenBestEffort();
+  showScreen("screen-exam");
+});
+
+$("btnGoLeaderboardFromLogin").addEventListener("click", ()=>{
+  renderLeaderboard();
+  showScreen("screen-leaderboard");
+});
+
+// ---------------------------------------------------------------
+// EXAM RENDERING
+// ---------------------------------------------------------------
+function buildQNav(){
+  const nav = $("qnav");
+  nav.innerHTML = "";
+  QUESTIONS.forEach((q,i)=>{
+    const b = document.createElement("button");
+    b.textContent = q.no;
+    b.addEventListener("click", ()=>{ state.current=i; renderQuestion(); });
+    nav.appendChild(b);
+  });
+}
+
+function refreshQNav(){
+  const nav = $("qnav");
+  Array.from(nav.children).forEach((b,i)=>{
+    b.classList.toggle("current", i===state.current);
+    b.classList.toggle("answered", state.answers[QUESTIONS[i].no]!==undefined);
+  });
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[state.current];
+  $("qNumberLabel").textContent = "SOAL " + q.no + " / 40";
+  $("qText").textContent = q.text;
+  const box = $("optionsBox");
+  box.innerHTML = "";
+  Object.keys(q.opts).forEach(letter=>{
+    const div = document.createElement("div");
+    div.className = "option" + (state.answers[q.no]===letter ? " selected":"");
+    div.innerHTML = '<span class="opt-letter">'+letter+'</span><span class="opt-text"></span>';
+    div.querySelector(".opt-text").textContent = q.opts[letter];
+    div.addEventListener("click", ()=>{
+      state.answers[q.no] = letter;
+      renderQuestion();
+      refreshQNav();
+    });
+    box.appendChild(div);
+  });
+  refreshQNav();
+  $("btnPrev").disabled = state.current===0;
+  $("btnPrev").style.opacity = state.current===0 ? .4 : 1;
+}
+
+$("btnPrev").addEventListener("click", ()=>{
+  if(state.current>0){ state.current--; renderQuestion(); }
+});
+$("btnNext").addEventListener("click", ()=>{
+  if(state.current<QUESTIONS.length-1){ state.current++; renderQuestion(); }
+});
+$("btnSubmit").addEventListener("click", ()=>{
+  const unanswered = QUESTIONS.length - Object.keys(state.answers).length;
+  if(unanswered>0){
+    if(!confirm("Masih ada "+unanswered+" soal yang belum dijawab. Tetap kumpulkan?")) return;
+  }
+  finishExam("selesai");
+});
+
+// ---------------------------------------------------------------
+// TIMER
+// ---------------------------------------------------------------
+function startTimer(){
+  updateTimerDisplay();
+  state.timerHandle = setInterval(()=>{
+    state.timeLeft--;
+    updateTimerDisplay();
+    if(state.timeLeft<=0){
+      clearInterval(state.timerHandle);
+      finishExam("waktu habis");
+    }
+  },1000);
+}
+function updateTimerDisplay(){
+  const m = Math.floor(state.timeLeft/60);
+  const s = state.timeLeft%60;
+  const box = $("timerBox");
+  box.textContent = String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  box.classList.toggle("low", state.timeLeft<=60);
+}
+
+// ---------------------------------------------------------------
+// ANTI-CHEAT
+// ---------------------------------------------------------------
+function requestFullscreenBestEffort(){
+  const el = document.documentElement;
+  if(el.requestFullscreen){ el.requestFullscreen().catch(()=>{}); }
+}
+
+function flagViolation(reason){
+  if(state.submitted) return;
+  state.violations++;
+  const banner = $("warnBanner");
+  banner.classList.remove("hidden");
+  banner.innerHTML = "⚠ Pelanggaran terdeteksi ("+reason+"). Peringatan "+state.violations+" dari "+MAX_VIOLATIONS+".";
+  if(state.violations>=MAX_VIOLATIONS){
+    finishExam("pelanggaran melebihi batas");
+  }
+}
+
+document.addEventListener("visibilitychange", ()=>{
+  if(document.hidden && $("screen-exam").classList.contains("hidden")===false && !state.submitted){
+    flagViolation("berpindah tab/jendela");
+  }
+});
+window.addEventListener("blur", ()=>{
+  if($("screen-exam").classList.contains("hidden")===false && !state.submitted){
+    flagViolation("keluar dari jendela ujian");
+  }
+});
+document.addEventListener("fullscreenchange", ()=>{
+  if(!document.fullscreenElement && $("screen-exam").classList.contains("hidden")===false && !state.submitted){
+    flagViolation("keluar dari mode layar penuh");
+  }
+});
+document.addEventListener("contextmenu", (e)=>{
+  if($("screen-exam").classList.contains("hidden")===false) e.preventDefault();
+});
+document.addEventListener("copy", (e)=>{
+  if($("screen-exam").classList.contains("hidden")===false) e.preventDefault();
+});
+document.addEventListener("paste", (e)=>{
+  if($("screen-exam").classList.contains("hidden")===false) e.preventDefault();
+});
+document.addEventListener("keydown", (e)=>{
+  if($("screen-exam").classList.contains("hidden")===false){
+    const k = e.key.toLowerCase();
+    if(k==="f12" || (e.ctrlKey && e.shiftKey && (k==="i"||k==="c"||k==="j")) || (e.ctrlKey && k==="u") || (e.ctrlKey && (k==="c"||k==="v"))){
+      e.preventDefault();
+    }
+  }
+});
+
+// ---------------------------------------------------------------
+// FINISH & SCORING
+// ---------------------------------------------------------------
+async function finishExam(reasonLabel){
+  if(state.submitted) return;
+  state.submitted = true;
+  clearInterval(state.timerHandle);
+  if(document.fullscreenElement){ document.exitFullscreen().catch(()=>{}); }
+
+  let correctCount = 0;
+  QUESTIONS.forEach(q=>{
+    if(state.answers[q.no]===q.correct) correctCount++;
+  });
+  const score = Math.round((correctCount/QUESTIONS.length)*100);
+  const elapsedSec = Math.floor((Date.now()-state.startTs)/1000);
+  const mm = Math.floor(elapsedSec/60), ss = elapsedSec%60;
+
+  $("resScore").textContent = score;
+  $("resName").textContent = state.name;
+  $("resClass").textContent = state.kelas;
+  $("resCorrect").textContent = correctCount;
+  $("resTime").textContent = mm+" menit "+ss+" detik";
+  $("resViol").textContent = state.violations;
+
+  const list = $("reviewList");
+  list.innerHTML = "";
+  QUESTIONS.forEach(q=>{
+    const yourAns = state.answers[q.no];
+    const isCorrect = yourAns===q.correct;
+    const div = document.createElement("div");
+    div.className = "review-item";
+    div.innerHTML =
+      '<div class="review-q"><span class="qi">'+q.no+'.</span></div>'+
+      '<div class="review-ans"></div>'+
+      '<div class="review-ans"></div>'+
+      '<div class="explain"></div>';
+    div.querySelector(".review-q").appendChild(document.createTextNode(q.text));
+    const ansLines = div.querySelectorAll(".review-ans");
+    ansLines[0].innerHTML = 'Jawabanmu: <b>'+(yourAns? yourAns+" — "+q.opts[yourAns] : "(tidak dijawab)")+'</b> <span class="tag '+(isCorrect?"correct":"wrong")+'">'+(isCorrect?"BENAR":"SALAH")+'</span>';
+    if(!isCorrect){
+      ansLines[1].innerHTML = 'Kunci jawaban: <b>'+q.correct+" — "+q.opts[q.correct]+'</b>';
+    } else {
+      ansLines[1].innerHTML = "";
+    }
+    div.querySelector(".explain").textContent = "Pembahasan: "+q.explain;
+    list.appendChild(div);
+  });
+
+  // save to shared storage
+  try{
+    const id = "hasil:" + Date.now() + "_" + Math.random().toString(36).slice(2,8);
+    await window.storage.set(id, JSON.stringify({
+      name: state.name,
+      kelas: state.kelas,
+      score, correctCount, total: QUESTIONS.length,
+      elapsedSec, violations: state.violations,
+      reason: reasonLabel,
+      timestamp: Date.now()
+    }), true);
+  }catch(err){
+    console.error("Gagal menyimpan hasil:", err);
+  }
+
+  showScreen("screen-result");
+}
+
+// ---------------------------------------------------------------
+// LEADERBOARD
+// ---------------------------------------------------------------
+async function loadAllResults(){
+  try{
+    const listRes = await window.storage.list("hasil:", true);
+    if(!listRes || !listRes.keys) return [];
+    const results = [];
+    for(const key of listRes.keys){
+      try{
+        const r = await window.storage.get(key, true);
+        if(r && r.value){ results.push(JSON.parse(r.value)); }
+      }catch(e){}
+    }
+    return results;
+  }catch(e){
+    console.error("Gagal memuat leaderboard:", e);
+    return [];
+  }
+}
+
+async function renderLeaderboard(){
+  const wrap = $("boardWrap");
+  wrap.innerHTML = '<p class="empty-state">Memuat data...</p>';
+  const all = await loadAllResults();
+
+  // populate class filter
+  const classes = Array.from(new Set(all.map(r=>r.kelas))).sort();
+  const sel = $("filterClass");
+  const prevVal = sel.value || "ALL";
+  sel.innerHTML = '<option value="ALL">Semua Kelas</option>' + classes.map(c=>'<option value="'+c+'">'+c+'</option>').join("");
+  sel.value = classes.includes(prevVal) ? prevVal : "ALL";
+
+  drawBoard(all);
+
+  sel.onchange = ()=>{
+    const filtered = sel.value==="ALL" ? all : all.filter(r=>r.kelas===sel.value);
+    drawBoard(filtered);
+  };
+}
+
+function drawBoard(data){
+  const wrap = $("boardWrap");
+  if(!data.length){
+    wrap.innerHTML = '<p class="empty-state">Belum ada hasil ujian yang tercatat.</p>';
+    return;
+  }
+  const sorted = data.slice().sort((a,b)=> b.score-a.score || a.elapsedSec-b.elapsedSec);
+  let html = '<table><thead><tr><th>#</th><th>Nama</th><th>Kelas</th><th>Nilai</th><th>Benar</th><th>Waktu</th><th>Pelanggaran</th></tr></thead><tbody>';
+  sorted.forEach((r,i)=>{
+    const rankClass = i===0?"rank1":(i===1?"rank2":(i===2?"rank3":""));
+    const mm = Math.floor((r.elapsedSec||0)/60), ss=(r.elapsedSec||0)%60;
+    html += '<tr class="'+rankClass+'"><td>'+(i+1)+'</td><td>'+escapeHtml(r.name)+'</td><td>'+escapeHtml(r.kelas)+'</td><td>'+r.score+'</td><td>'+r.correctCount+'/'+r.total+'</td><td>'+mm+'m '+ss+'d</td><td>'+(r.violations||0)+'</td></tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+// ---------------------------------------------------------------
+// NAV
+// ---------------------------------------------------------------
+$("tabLeaderboard").addEventListener("click", ()=>{ renderLeaderboard(); showScreen("screen-leaderboard"); });
+$("btnToLeaderboard").addEventListener("click", ()=>{ renderLeaderboard(); showScreen("screen-leaderboard"); });
+$("btnRefreshBoard").addEventListener("click", renderLeaderboard);
+$("btnBackLogin").addEventListener("click", ()=>{ resetToLogin(); });
+$("btnBackLogin2").addEventListener("click", ()=>{ resetToLogin(); });
+
+function resetToLogin(){
+  $("inpName").value = "";
+  showScreen("screen-login");
+}
+
+// init
+showScreen("screen-login");
+$("navTabs").classList.remove("hidden");
+})();
+</script>
+</body>
+</html>
